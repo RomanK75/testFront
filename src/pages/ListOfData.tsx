@@ -5,19 +5,23 @@ import useFetch from '../hooks/useFetch'
 interface ApiResponse {
   data: any[]
 }
+type Props = {
+  apiUrl: string
+}
 
-const Product = () => {
+const ListOfData = (props : Props) => {
   const [data, setData] = useState<ApiResponse>({ data: [] })
   const [searchTerm, setSearchTerm] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
-  const {handleDeleteProduct } = useFetch()
+  const {handleDelete } = useFetch()
 
   const fetchData = async () => {
     try {
-      let url = '/api/product'
+      let url = props.apiUrl
+      const idOrPlu = url.startsWith('/api/product') ? 'plu' : 'id'
       if (searchQuery) {
         const isNumeric = !isNaN(Number(searchQuery))
-        url += `?${isNumeric ? 'plu' : 'name'}=${encodeURIComponent(searchQuery)}`
+        url += `?${isNumeric ? idOrPlu : 'name'}=${encodeURIComponent(searchQuery)}`
       }
 
       const response = await fetch(url)
@@ -26,6 +30,7 @@ const Product = () => {
     } catch (error) {
       console.error('Error:', error)
     }
+    
   }
 
   useEffect(() => {
@@ -52,13 +57,13 @@ const Product = () => {
       </div>
       <div>
         {data.data.length > 0 ? (
-          <DataTable data={data.data} onDelete={handleDeleteProduct} />
+          <DataTable data={data.data} onDelete={handleDelete} />
         ) : (
-          <div>No products found</div>
+          <div>No data found</div>
         )}
       </div>
     </div>
   )
 }
 
-export default Product
+export default ListOfData

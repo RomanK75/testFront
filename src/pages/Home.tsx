@@ -24,21 +24,17 @@ const Home = (props: Props) => {
       } />
     </div>
     <div>
-      <div>Stock api</div>
+      <div>shop api</div>
       <ButtonGroup buttons={
         [
           {
-            href: '/stock/add',
-            btnText: 'Add stock'
+            href: '/shop',
+            btnText: 'Add shop'
           },
           {
-            href: '/stock/view',
-            btnText: 'View stock'
+            href: '/shops',
+            btnText: 'View shop'
           },
-          {
-            href: '/stock/edit',
-            btnText: 'Edit/Delete stock'
-          }
         ]
       } />
     </div>

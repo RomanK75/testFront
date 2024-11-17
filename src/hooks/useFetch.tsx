@@ -3,28 +3,29 @@ import { useEffect, useState } from 'react'
 
 interface ApiResponse {
     error?: string;
-    plu?: number;
+    id?: number;
     name?: string;
+    plu?: number;
 }
 
 const useFetch = () => {
   const [data, setData] = useState<ApiResponse>({})
-  const [currentEndpoint, setCurrentEndpoint] = useState('/api/product')
+  // const [currentEndpoint, setCurrentEndpoint] = useState('')
 
-  const fetchData = async (endpoint: string) => {
-    try {
-      const response = await fetch(endpoint)
-      const result = await response.json()
-      setData(result)
-      setCurrentEndpoint(endpoint)
-      console.log(result)
-    } catch (error) {
-    }
-  }
+  // const fetchData = async (endpoint: string) => {
+  //   try {
+  //     const response = await fetch(endpoint)
+  //     const result = await response.json()
+  //     setData(result)
+  //     setCurrentEndpoint(endpoint)
+  //     console.log(result)
+  //   } catch (error) {
+  //   }
+  // }
 
-  const handleAddProduct = async (productData: any) => {
+  const handleAdd = async (productData: any, endpoint: string) => {
     try {
-      const response = await fetch('/api/product', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,10 +47,10 @@ const useFetch = () => {
     }
   }
 
-  const handleDeleteProduct = async (plu: number) => {
+  const handleDelete = async (id: number, endpoint: string) => {
     try {
-      console.log(plu)
-      const response = await fetch(`/api/product/${plu}`, {
+      console.log(id)
+      const response = await fetch(`${endpoint}/${id}`, {
         method: 'DELETE',
       })
       // if (response.ok) {
@@ -60,10 +61,10 @@ const useFetch = () => {
     }
   }
 
-  const editProduct = async (plu: string, updatedData: string) => {
-    console.log(plu, updatedData)
+  const edit = async (id: string, updatedData: string, endpoint: string) => {
+    // console.log(id, updatedData)
     try {
-      const response = await fetch(`/api/product/${plu}`, {
+      const response = await fetch(`${endpoint}/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -85,10 +86,10 @@ const useFetch = () => {
 
   return {
     data,
-    fetchData,
-    handleAddProduct,
-    handleDeleteProduct,
-    editProduct,
+    handleAdd,
+    handleDelete,
+    edit,
+
   }
 
 }

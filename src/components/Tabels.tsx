@@ -1,9 +1,9 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
 
 type DataTableProps = {
   data: any[]
-  onDelete: (plu: number) => void
+  onDelete: (plu: number, endpoint: string) => void
 }
 
 const DataTable: React.FC<DataTableProps> = ({ data, onDelete }) => {
@@ -65,7 +65,7 @@ const DataTable: React.FC<DataTableProps> = ({ data, onDelete }) => {
                 Edit
               </button>
               <button 
-                onClick={() => onDelete(item.plu)}
+                onClick={() => onDelete(item.plu, '/api/product')}
               >
                 Delete
               </button>
