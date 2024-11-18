@@ -1,21 +1,19 @@
-import React from 'react'
-import NavButton from './NavButton'
-import { NavButtonProps } from './NavButton'
+import React from 'react';
+import NavButton from './NavButton';
+import { NavButtonProps } from './NavButton';
 
 type Props = {
-  buttons: NavButtonProps[]
-}
+  buttons: NavButtonProps[];
+};
 
-const ButtonGroup = ({buttons}: Props) => {
+const ButtonGroup = ({ buttons }: Props) => {
   return (
     <div>
       {buttons.map((item) => {
-        return (
-          <NavButton href={item.href} btnText={item.btnText} />
-        )
+        return <NavButton href={item.href} btnText={item.btnText} />;
       })}
     </div>
-  )
-}
+  );
+};
 
-export default ButtonGroup
+export default ButtonGroup;

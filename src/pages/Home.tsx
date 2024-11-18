@@ -1,13 +1,13 @@
-import Navbar from '../components/Navbar'
+import Navbar from '../components/Navbar';
 
-type Props = {}
+type Props = {};
 
 const Home = (props: Props) => {
   return (
     <div>
-    <Navbar></Navbar>
+      <Navbar></Navbar>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

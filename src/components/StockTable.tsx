@@ -9,116 +9,99 @@ import {
   Paper,
   TextField,
   Grid,
-  Button
+  Button,
+  Pagination,
 } from '@mui/material';
 import Navbar from './Navbar';
 
-interface Stock {
-  id: number;
-  plu: number;
-  product_name: string;
-  store_id: number;
-  store_name: string;
-  quantity: number;
-  order_quantity: number;
+export interface TableConfig {
+  endpoint: string;
+  baseUrl: string;
+  filters: FilterConfig[];
+  columns: ColumnConfig[];
 }
 
-const StockTable = () => {
-  const [stocks, setStocks] = useState<Stock[]>([]);
-  const [filters, setFilters] = useState({
-    plu: '',
-    store_id: '',
-    quantity_from: '',
-    quantity_to: '',
-    order_quantity_from: '',
-    order_quantity_to: ''
+interface FilterConfig {
+  name: string;
+  label: string;
+  type: 'text' | 'number' | 'date';
+}
+
+interface ColumnConfig {
+  key: string;
+  label: string;
+}
+
+interface PaginationData {
+  total: number;
+  page: number;
+  limit: number;
+}
+
+const DataTable = ({ config }: { config: TableConfig }) => {
+  const [data, setData] = useState<any[]>([]);
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [pagination, setPagination] = useState<PaginationData>({
+    total: 0,
+    page: 1,
+    limit: 10,
   });
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const fetchStocks = async () => {
-    const queryParams = new URLSearchParams();
+  const fetchData = async () => {
+    const queryParams = new URLSearchParams({
+      page: pagination.page.toString(),
+      limit: pagination.limit.toString(),
+    });
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value) queryParams.append(key, value);
     });
 
-    const response = await fetch(`/api/stock?${queryParams}`);
-    const data = await response.json();
-    setStocks(data.data || []);
+    const response = await fetch(`${config.endpoint}?${queryParams}`);
+    const result = await response.json();
+    setData(result.data || []);
+    if (result.pagination) {
+      setPagination(result.pagination);
+    }
   };
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    page: number,
+  ) => {
+    setPagination((prev) => ({ ...prev, page }));
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [pagination.page]);
 
   return (
     <div>
-      <Navbar></Navbar>
+      <Navbar />
       <Grid container spacing={2} sx={{ mb: 3, mt: 1 }}>
-        <Grid item xs={2}>
-          <TextField
-            fullWidth
-            label="PLU"
-            name="plu"
-            type="number"
-            value={filters.plu}
-            onChange={handleFilterChange}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            fullWidth
-            label="Store ID"
-            name="store_id"
-            type="number"
-            value={filters.store_id}
-            onChange={handleFilterChange}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            fullWidth
-            label="Quantity From"
-            name="quantity_from"
-            type="number"
-            value={filters.quantity_from}
-            onChange={handleFilterChange}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            fullWidth
-            label="Quantity To"
-            name="quantity_to"
-            type="number"
-            value={filters.quantity_to}
-            onChange={handleFilterChange}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            fullWidth
-            label="Order Quantity From"
-            name="order_quantity_from"
-            type="number"
-            value={filters.order_quantity_from}
-            onChange={handleFilterChange}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            fullWidth
-            label="Order Quantity To"
-            name="order_quantity_to"
-            type="number"
-            value={filters.order_quantity_to}
-            onChange={handleFilterChange}
-          />
-        </Grid>
+        {config.filters.map((filter) => (
+          <Grid item xs={2} key={filter.name}>
+            <TextField
+              fullWidth
+              label={filter.label}
+              name={filter.name}
+              type={filter.type}
+              value={filters[filter.name] || ''}
+              onChange={handleFilterChange}
+            />
+          </Grid>
+        ))}
         <Grid item xs={12}>
-          <Button variant="contained" onClick={fetchStocks}>
+          <Button variant="contained" onClick={fetchData}>
             Apply Filters
           </Button>
         </Grid>
@@ -128,30 +111,31 @@ const StockTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>PLU</TableCell>
-              <TableCell>Product Name</TableCell>
-              <TableCell>Store ID</TableCell>
-              <TableCell>Store Name</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Order Quantity</TableCell>
+              {config.columns.map((column) => (
+                <TableCell key={column.key}>{column.label}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {stocks.map((stock) => (
-              <TableRow key={stock.id}>
-                <TableCell>{stock.plu}</TableCell>
-                <TableCell>{stock.product_name}</TableCell>
-                <TableCell>{stock.store_id}</TableCell>
-                <TableCell>{stock.store_name}</TableCell>
-                <TableCell>{stock.quantity}</TableCell>
-                <TableCell>{stock.order_quantity}</TableCell>
+            {data.map((row, index) => (
+              <TableRow key={index}>
+                {config.columns.map((column) => (
+                  <TableCell key={column.key}>{row[column.key]}</TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Pagination
+        count={Math.ceil(pagination.total / pagination.limit)}
+        page={pagination.page}
+        onChange={handlePageChange}
+        sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}
+      />
     </div>
   );
 };
 
-export default StockTable;
+export default DataTable;
