@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import DataTable from '../components/Tabels'
 import useFetch from '../hooks/useFetch'
+import Navbar from '../components/Navbar'
 
 interface ApiResponse {
   data: any[]
@@ -35,7 +36,7 @@ const ListOfData = (props : Props) => {
 
   useEffect(() => {
     fetchData()
-  }, [searchQuery])
+  }, [searchQuery, props.apiUrl])
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -44,11 +45,12 @@ const ListOfData = (props : Props) => {
 
   return (
     <div>
+      <Navbar></Navbar>
       <div>
         <form onSubmit={handleSearch}>
           <input
             type="text"
-            placeholder="Search by name or PLU..."
+            placeholder="Search by name or ID/PLU..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -57,7 +59,7 @@ const ListOfData = (props : Props) => {
       </div>
       <div>
         {data.data.length > 0 ? (
-          <DataTable data={data.data} onDelete={handleDelete} />
+          <DataTable data={data.data} onDelete={handleDelete} apiUrl={props.apiUrl} />
         ) : (
           <div>No data found</div>
         )}

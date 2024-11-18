@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useFetch }  from '../hooks/useFetchStock'
+import { useParams, useLocation } from 'react-router-dom'
+import Navbar from '../components/Navbar'
 
 interface StockFormData {
   product_id: number
@@ -7,7 +9,11 @@ interface StockFormData {
   order_quantity: number
 }
 
-const Shop = ({ id, name }: { id: number, name: string }) => {
+const Shop = () => {
+  const { id } = useParams()
+  const { name } = useLocation().state
+
+  console.log(id, name)
 
   const [formData, setFormData] = useState<StockFormData>({
     product_id: 0,
@@ -55,6 +61,7 @@ const Shop = ({ id, name }: { id: number, name: string }) => {
 
   return (
     <div>
+      <Navbar></Navbar>
       <h2>Shop: {name}</h2>
       <form onSubmit={handleSubmit}>
         <div>

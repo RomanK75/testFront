@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import useFetch from '../hooks/useFetch'
 import { useLocation, useParams } from 'react-router-dom'
+import Navbar from './Navbar'
 
 
 interface FormData {
@@ -13,7 +14,7 @@ interface FormProps {
 }
 
 
-const ProductForm: React.FC<FormProps> = () => {
+const FormData: React.FC<FormProps> = () => {
   const { plu } = useParams<{ plu?: string }>()
   const { id } = useParams<{ id?: string }>()
   const location = useLocation()
@@ -53,6 +54,7 @@ const ProductForm: React.FC<FormProps> = () => {
 
   return (
     <div>
+    <Navbar />
     <form onSubmit={handleSubmit}>
       <input
         type="text"
@@ -71,16 +73,21 @@ const ProductForm: React.FC<FormProps> = () => {
     <div>
       {data.error ? (
         <p style={{ color: 'red' }}>{data.error}</p>
-      ) : (
+      ) : (location.pathname.startsWith('/product') ? (
         <div>
-          <p>PLU: {data.plu}</p>
-          <p>Name: {data.name}</p>
+          <h3>PRODUCT PLU: {data.plu}</h3>
+          <h3>PRODUCT NAME: {data.name}</h3>
         </div>
-      )}
+      ):(
+        <div>
+          <h3>SHOP ID: {data.id}</h3>
+          <h3>SHOP NAME: {data.name}</h3>
+        </div>
+      ))}
     </div>
-    </div>
+  </div>
     
   )
 }
 
-export default ProductForm
+export default FormData
